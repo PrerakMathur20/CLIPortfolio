@@ -77,7 +77,7 @@ export const Terminal: React.FC<TerminalProps> = ({ onPathChange }) => {
   };
 
   return (
-    <div className="w-2/5 bg-black border-r border-matrix-green/30 p-6 flex flex-col font-mono">
+    <div className="w-full h-full bg-black border-r md:border-r border-b md:border-b-0 border-matrix-green/30 p-4 md:p-6 flex flex-col font-mono">
       <div className="text-matrix-green text-sm mb-4">
         <div className="mb-2">Welcome to Prerak's Portfolio Terminal</div>
         <div className="text-gray-400">Type 'help' for available commands</div>

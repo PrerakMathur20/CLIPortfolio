@@ -362,9 +362,11 @@ export const CLIMode: React.FC<CLIModeProps> = ({ currentPath, onPathChange }) =
   };
 
   return (
-    <div className="flex h-screen bg-black">
-      <Terminal onPathChange={onPathChange} />
-      <div className="w-3/5 p-8 text-white overflow-y-auto scrollbar-thin scrollbar-thumb-matrix-green scrollbar-track-transparent">
+    <div className="flex flex-col md:flex-row h-screen bg-black">
+      <div className="w-full md:w-2/5">
+        <Terminal onPathChange={onPathChange} />
+      </div>
+      <div className="w-full md:w-3/5 p-4 md:p-8 text-white overflow-y-auto scrollbar-thin scrollbar-thumb-matrix-green scrollbar-track-transparent">
         <div data-testid="cli-content">
           {renderContent()}
         </div>
