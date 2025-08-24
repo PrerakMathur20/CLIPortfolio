@@ -13,11 +13,10 @@ export default function Portfolio() {
     if (newMode === mode) return;
     
     setShowTransition(true);
-    
-    // Switch mode after a brief delay to allow UI fade
-    setTimeout(() => {
-      setMode(newMode);
-    }, 500);
+  };
+
+  const handleModeSwitch = () => {
+    setMode(mode === 'cli' ? 'gui' : 'cli');
   };
 
   const handleTransitionComplete = () => {
@@ -64,10 +63,13 @@ export default function Portfolio() {
       <MatrixTransition 
         isVisible={showTransition} 
         onComplete={handleTransitionComplete}
+        onModeSwitch={handleModeSwitch}
       />
 
       {/* Main Content */}
-      <div className={`transition-opacity duration-500 ease-in-out ${showTransition ? 'opacity-0' : 'opacity-100'}`}>
+      <div className={`transition-opacity duration-700 ease-in-out ${
+        showTransition ? (mode === 'cli' ? 'opacity-100' : 'opacity-0') : 'opacity-100'
+      }`}>
         <AnimatePresence mode="wait">
           {mode === 'cli' ? (
             <motion.div
