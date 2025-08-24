@@ -6,23 +6,18 @@ import { MatrixTransition } from '../components/MatrixTransition';
 
 export default function Portfolio() {
   const [mode, setMode] = useState<'cli' | 'gui'>('cli');
-  const [targetMode, setTargetMode] = useState<'cli' | 'gui'>('cli');
   const [showTransition, setShowTransition] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
 
   const switchMode = (newMode: 'cli' | 'gui') => {
     if (newMode === mode) return;
     
-    setTargetMode(newMode);
     setShowTransition(true);
-  };
-
-  const handleModeSwitch = () => {
-    setMode(targetMode);
   };
 
   const handleTransitionComplete = () => {
     setShowTransition(false);
+    setMode(mode === 'cli' ? 'gui' : 'cli');
   };
 
   const handlePathChange = (path: string) => {
@@ -62,43 +57,27 @@ export default function Portfolio() {
       </div>
 
       {/* Matrix Transition */}
-      <MatrixTransition 
-        isVisible={showTransition} 
-        onComplete={handleTransitionComplete}
-        onModeSwitch={handleModeSwitch}
-      />
+      <MatrixTransition isVisible={showTransition} onComplete={handleTransitionComplete} />
 
       {/* Main Content */}
       <AnimatePresence mode="wait">
         {mode === 'cli' ? (
           <motion.div
             key="cli"
-            className="relative z-10"
             initial={{ opacity: 0 }}
-            animate={{ 
-              opacity: showTransition ? 0 : 1
-            }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ 
-              duration: showTransition ? 0.8 : 0.5,
-              delay: showTransition ? 0 : 1.6
-            }}
+            transition={{ duration: 0.3 }}
           >
             <CLIMode currentPath={currentPath} onPathChange={handlePathChange} />
           </motion.div>
         ) : (
           <motion.div
             key="gui"
-            className="relative z-10"
             initial={{ opacity: 0 }}
-            animate={{ 
-              opacity: showTransition ? 0 : 1
-            }}
+            animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            transition={{ 
-              duration: showTransition ? 0.8 : 0.5,
-              delay: showTransition ? 0 : 1.6
-            }}
+            transition={{ duration: 0.3 }}
           >
             <PortfolioGUI />
           </motion.div>
