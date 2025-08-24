@@ -363,7 +363,7 @@ export const CLIMode: React.FC<CLIModeProps> = ({ currentPath, onPathChange }) =
 
   return (
     <div className="flex flex-col md:flex-row h-screen bg-black">
-      <div className="w-full md:w-2/5">
+      <div className="w-full md:w-2/5 h-1/2 md:h-full">
         <Terminal onPathChange={onPathChange} />
       </div>
       <div className="w-full md:w-3/5 p-4 md:p-8 text-white overflow-y-auto scrollbar-thin scrollbar-thumb-matrix-green scrollbar-track-transparent">
