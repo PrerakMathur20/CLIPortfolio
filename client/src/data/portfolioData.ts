@@ -145,7 +145,8 @@ export const portfolioData: PortfolioData = {
       email: 'mathur.prerak@gmail.com',
       phone: '+91 967 261 4863',
       website: 'prerak.tech',
-      github: 'PrerakMathur20'
+      github: 'PrerakMathur20',
+      linkedin: 'PrerakMathur'
     }
   }
 };

@@ -174,7 +174,32 @@ export const CLIMode: React.FC<CLIModeProps> = ({ currentPath, onPathChange }) =
         return (
           <div className="space-y-6">
             <h1 className="text-3xl font-bold text-matrix-green">Contact Information</h1>
+            
+            {/* Contact Form */}
+            <div className="glass-card rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-white mb-4">Send a Message</h3>
+              <div className="space-y-4 text-sm">
+                <div>
+                  <label className="text-gray-400 block mb-1">Email:</label>
+                  <div className="bg-gray-800 p-2 rounded border border-gray-600 text-matrix-green font-mono">
+                    [Enter your email] - Use: send-message command
+                  </div>
+                </div>
+                <div>
+                  <label className="text-gray-400 block mb-1">Message:</label>
+                  <div className="bg-gray-800 p-2 rounded border border-gray-600 text-matrix-green font-mono min-h-[80px] flex items-center">
+                    [Enter your message] - Use: send-message command
+                  </div>
+                </div>
+                <div className="text-xs text-gray-500">
+                  Use terminal command "send-message" to fill this form interactively
+                </div>
+              </div>
+            </div>
+
+            {/* Contact Information */}
             <div className="glass-card rounded-xl p-6 space-y-4">
+              <h3 className="text-xl font-semibold text-white mb-4">Direct Contact</h3>
               <div className="flex items-center text-white">
                 <i className="fas fa-envelope text-matrix-green mr-3"></i>
                 <span>{portfolioData.contact.info.email}</span>
@@ -187,15 +212,31 @@ export const CLIMode: React.FC<CLIModeProps> = ({ currentPath, onPathChange }) =
                 <i className="fas fa-globe text-matrix-green mr-3"></i>
                 <span>{portfolioData.contact.info.website}</span>
               </div>
-              <div className="flex items-center text-white">
-                <i className="fab fa-github text-matrix-green mr-3"></i>
-                <span>{portfolioData.contact.info.github}</span>
+            </div>
+
+            {/* Social Links */}
+            <div className="glass-card rounded-xl p-6">
+              <h3 className="text-xl font-semibold text-white mb-4">Connect & Links</h3>
+              <div className="space-y-2 text-sm">
+                <div className="text-white">
+                  <span className="text-matrix-green">GitHub:</span> https://github.com/{portfolioData.contact.info.github}
+                </div>
+                <div className="text-white">
+                  <span className="text-matrix-green">LinkedIn:</span> https://linkedin.com/in/{portfolioData.contact.info.linkedin}
+                </div>
+                <div className="text-white">
+                  <span className="text-matrix-green">Email:</span> mailto:{portfolioData.contact.info.email}
+                </div>
+                <div className="text-white">
+                  <span className="text-matrix-green">Resume:</span> /attached_assets/PrerakMathurResume_1756000441188.pdf
+                </div>
               </div>
             </div>
+
             <div className="text-sm text-gray-400">
               <p>Terminal commands available:</p>
-              <p className="text-matrix-green font-mono">• send-message "Your message here"</p>
-              <p className="text-matrix-green font-mono">• schedule-call</p>
+              <p className="text-matrix-green font-mono">• send-message - Start contact form</p>
+              <p className="text-matrix-green font-mono">• schedule-call - Schedule a call</p>
             </div>
           </div>
         );

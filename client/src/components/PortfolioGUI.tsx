@@ -447,6 +447,40 @@ export const PortfolioGUI: React.FC = () => {
                 </div>
               </motion.a>
 
+              <motion.a 
+                href={`https://linkedin.com/in/${portfolioData.contact.info.linkedin}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glass-card rounded-xl p-6 hover:scale-105 transition-all duration-300 group block"
+                whileHover={{ y: -5 }}
+                data-testid="contact-linkedin"
+              >
+                <div className="flex items-center">
+                  <i className="fab fa-linkedin text-matrix-green text-2xl mr-4 group-hover:text-blue-400 transition-colors"></i>
+                  <div>
+                    <h4 className="font-semibold">LinkedIn</h4>
+                    <p className="text-gray-400 text-sm">{portfolioData.contact.info.linkedin}</p>
+                  </div>
+                </div>
+              </motion.a>
+
+              <motion.a 
+                href="/attached_assets/PrerakMathurResume_1756000441188.pdf"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glass-card rounded-xl p-6 hover:scale-105 transition-all duration-300 group block"
+                whileHover={{ y: -5 }}
+                data-testid="contact-resume"
+              >
+                <div className="flex items-center">
+                  <i className="fas fa-file-pdf text-matrix-green text-2xl mr-4 group-hover:text-blue-400 transition-colors"></i>
+                  <div>
+                    <h4 className="font-semibold">Download Resume</h4>
+                    <p className="text-gray-400 text-sm">PDF Document</p>
+                  </div>
+                </div>
+              </motion.a>
+
               <div className="glass-card rounded-xl p-6">
                 <div className="flex items-center">
                   <i className="fas fa-phone text-matrix-green text-2xl mr-4"></i>
