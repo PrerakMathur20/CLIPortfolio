@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { motion } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 
 interface MatrixTransitionProps {
   isVisible: boolean;
@@ -7,45 +7,72 @@ interface MatrixTransitionProps {
   onModeSwitch: () => void;
 }
 
-export const MatrixTransition: React.FC<MatrixTransitionProps> = ({ isVisible, onComplete, onModeSwitch }) => {
-  const [chars, setChars] = useState<Array<{ id: number; char: string; left: string; delay: number; speed: number }>>([]);
-  const [phase, setPhase] = useState<'overlay' | 'intensify' | 'fadeOut'>('overlay');
+interface MatrixChar {
+  id: number;
+  char: string;
+  left: string;
+  top: string;
+  delay: number;
+  duration: number;
+}
+
+export const MatrixTransition: React.FC<MatrixTransitionProps> = ({ 
+  isVisible, 
+  onComplete, 
+  onModeSwitch 
+}) => {
+  const [phase, setPhase] = useState<'part1' | 'part2' | 'part3'>('part1');
+  const [chars, setChars] = useState<MatrixChar[]>([]);
 
   useEffect(() => {
     if (isVisible) {
-      // Generate falling matrix characters
-      const newChars = Array.from({ length: 150 }, (_, i) => ({
+      // Part 1: Generate a few falling characters (30 chars)
+      const part1Chars = Array.from({ length: 30 }, (_, i) => ({
         id: i,
         char: Math.random() > 0.5 ? '1' : '0',
         left: `${Math.random() * 100}%`,
-        delay: Math.random() * 0.4,
-        speed: Math.random() * 2 + 1.5
+        top: `${-10 - Math.random() * 20}%`,
+        delay: Math.random() * 0.3,
+        duration: 2 + Math.random()
       }));
-      setChars(newChars);
-
-      // Phase 1: Matrix overlays current screen (800ms)
-      setPhase('overlay');
       
-      const phase1Timer = setTimeout(() => {
-        // Phase 2: Screen disappears, matrix intensifies (700ms)
-        setPhase('intensify');
-        onModeSwitch(); // Switch mode during intensify phase
+      setChars(part1Chars);
+      setPhase('part1');
+
+      // After 800ms, move to Part 2
+      const part2Timer = setTimeout(() => {
+        // Part 2: Generate MANY more characters to fill screen (200 chars)
+        const part2Chars = Array.from({ length: 200 }, (_, i) => ({
+          id: i + 30,
+          char: Math.random() > 0.5 ? '1' : '0',
+          left: `${Math.random() * 100}%`,
+          top: `${-10 - Math.random() * 30}%`,
+          delay: Math.random() * 0.2,
+          duration: 1.5 + Math.random()
+        }));
+        
+        setChars(prev => [...prev, ...part2Chars]);
+        setPhase('part2');
+        
+        // Switch the mode now so new screen loads in background
+        onModeSwitch();
       }, 800);
 
-      const phase2Timer = setTimeout(() => {
-        // Phase 3: New screen appears, matrix fades out (1000ms)
-        setPhase('fadeOut');
-      }, 1500);
+      // After 1600ms, move to Part 3
+      const part3Timer = setTimeout(() => {
+        setPhase('part3');
+      }, 1600);
 
+      // Complete the transition after 2800ms total
       const completeTimer = setTimeout(() => {
         onComplete();
         setChars([]);
-        setPhase('overlay');
-      }, 2500);
+        setPhase('part1');
+      }, 2800);
 
       return () => {
-        clearTimeout(phase1Timer);
-        clearTimeout(phase2Timer);
+        clearTimeout(part2Timer);
+        clearTimeout(part3Timer);
         clearTimeout(completeTimer);
       };
     }
@@ -54,49 +81,58 @@ export const MatrixTransition: React.FC<MatrixTransitionProps> = ({ isVisible, o
   if (!isVisible) return null;
 
   return (
-    <motion.div
-      className="fixed inset-0 z-50 overflow-hidden pointer-events-none"
-      data-testid="matrix-transition"
-    >
-      {/* Background overlay */}
+    <>
+      {/* Black background overlay */}
       <motion.div
-        className="absolute inset-0 bg-black"
+        className="fixed inset-0 bg-black z-40"
         initial={{ opacity: 0 }}
         animate={{ 
-          opacity: phase === 'overlay' ? 0 : phase === 'intensify' ? 1 : 0.2
+          opacity: phase === 'part1' ? 0.8 : 
+                  phase === 'part2' ? 1 : 
+                  0
         }}
-        transition={{ duration: 0.5, ease: 'easeInOut' }}
+        transition={{ 
+          duration: phase === 'part3' ? 1.2 : 0.8,
+          ease: 'easeInOut' 
+        }}
+        data-testid="matrix-overlay"
       />
 
-      {/* Matrix rain */}
-      {chars.map((char) => (
-        <motion.div
-          key={char.id}
-          className="absolute text-matrix-green font-mono text-sm"
-          style={{ left: char.left }}
-          initial={{ y: '-10vh', opacity: 0 }}
-          animate={{ 
-            y: '110vh',
-            opacity: phase === 'overlay' ? 0.6 : 
-                    phase === 'intensify' ? 0.9 : 
-                    0
-          }}
-          transition={{
-            y: {
-              duration: char.speed,
-              delay: char.delay,
-              ease: 'linear',
-              repeat: Infinity
-            },
-            opacity: {
-              duration: phase === 'fadeOut' ? 1.0 : 0.6,
-              ease: phase === 'fadeOut' ? 'easeOut' : 'easeIn'
-            }
-          }}
-        >
-          {char.char}
-        </motion.div>
-      ))}
-    </motion.div>
+      {/* Matrix characters */}
+      <div className="fixed inset-0 z-50 overflow-hidden pointer-events-none">
+        <AnimatePresence>
+          {chars.map((char) => (
+            <motion.div
+              key={char.id}
+              className="absolute text-matrix-green font-mono text-lg"
+              style={{ left: char.left }}
+              initial={{ 
+                top: char.top,
+                opacity: 0 
+              }}
+              animate={{ 
+                top: '110%',
+                opacity: phase === 'part1' ? 0.7 :
+                        phase === 'part2' ? 1 :
+                        0
+              }}
+              transition={{
+                top: {
+                  duration: char.duration,
+                  delay: char.delay,
+                  ease: 'linear'
+                },
+                opacity: {
+                  duration: phase === 'part3' ? 1 : 0.4,
+                  ease: 'easeOut'
+                }
+              }}
+            >
+              {char.char}
+            </motion.div>
+          ))}
+        </AnimatePresence>
+      </div>
+    </>
   );
 };
