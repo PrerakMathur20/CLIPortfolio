@@ -14,10 +14,10 @@ export default function Portfolio() {
     
     setShowTransition(true);
     
-    // Switch mode after fade out completes (1 second)
+    // Switch mode after fade out completes (0.5 seconds)
     setTimeout(() => {
       setMode(newMode);
-    }, 1000);
+    }, 500);
   };
 
   const handleTransitionComplete = () => {
@@ -77,8 +77,8 @@ export default function Portfolio() {
             }}
             exit={{ opacity: 0 }}
             transition={{ 
-              duration: showTransition ? 1 : 2,
-              delay: showTransition ? 0 : 2,
+              duration: showTransition ? 0.5 : 0.5,
+              delay: showTransition ? 0 : 1.5,
               ease: 'easeInOut'
             }}
           >
@@ -93,8 +93,8 @@ export default function Portfolio() {
             }}
             exit={{ opacity: 0 }}
             transition={{ 
-              duration: showTransition ? 1 : 2,
-              delay: showTransition ? 0 : 2,
+              duration: showTransition ? 0.5 : 0.5,
+              delay: showTransition ? 0 : 1.5,
               ease: 'easeInOut'
             }}
           >

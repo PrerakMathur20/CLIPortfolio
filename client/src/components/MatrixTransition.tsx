@@ -11,20 +11,20 @@ export const MatrixTransition: React.FC<MatrixTransitionProps> = ({ isVisible, o
 
   useEffect(() => {
     if (isVisible) {
-      // Generate a huge amount of falling matrix characters
-      const newChars = Array.from({ length: 400 }, (_, i) => ({
+      // Generate a massive amount of falling matrix characters for high density
+      const newChars = Array.from({ length: 800 }, (_, i) => ({
         id: i,
         char: Math.random() > 0.5 ? '1' : '0',
         left: `${Math.random() * 100}%`,
-        delay: Math.random() * 1.5
+        delay: Math.random() * 0.8
       }));
       setChars(newChars);
 
-      // Complete the transition after 3 seconds
+      // Complete the transition after 2 seconds
       const timer = setTimeout(() => {
         onComplete();
         setChars([]);
-      }, 3000);
+      }, 2000);
 
       return () => clearTimeout(timer);
     }
@@ -53,7 +53,7 @@ export const MatrixTransition: React.FC<MatrixTransitionProps> = ({ isVisible, o
           initial={{ y: '-10vh' }}
           animate={{ y: '110vh' }}
           transition={{
-            duration: Math.random() * 2 + 2,
+            duration: Math.random() * 1 + 0.8,
             delay: char.delay,
             ease: 'linear'
           }}
