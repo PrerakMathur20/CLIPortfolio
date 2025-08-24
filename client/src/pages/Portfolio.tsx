@@ -78,7 +78,7 @@ export default function Portfolio() {
             exit={{ opacity: 0 }}
             transition={{ 
               duration: showTransition ? 0.5 : 0.5,
-              delay: showTransition ? 0 : 1.5,
+              delay: showTransition ? 0 : 0.8,
               ease: 'easeInOut'
             }}
           >
@@ -94,7 +94,7 @@ export default function Portfolio() {
             exit={{ opacity: 0 }}
             transition={{ 
               duration: showTransition ? 0.5 : 0.5,
-              delay: showTransition ? 0 : 1.5,
+              delay: showTransition ? 0 : 0.8,
               ease: 'easeInOut'
             }}
           >
