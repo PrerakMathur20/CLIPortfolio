@@ -130,6 +130,14 @@ export const useTerminal = () => {
       ];
     },
 
+    hello: () => {
+      return ['Hello! Nice to meet you!', 'Type "help" to see available commands.'];
+    },
+
+    iamshreya: () => {
+      return ['Hey baby! Reminder: I love you $INT_MAX 💖'];
+    },
+
     'send-message': () => {
       if (state.currentPath !== '/contact') {
         return ['Error: send-message command is only available in /contact directory', 'Use "cd contact" first'];
@@ -333,7 +341,7 @@ export const useTerminal = () => {
       } else {
         dirs = ['..'];
       }
-      
+    
       return dirs.filter(dir => dir.startsWith(parts[1].toLowerCase()));
     }
     

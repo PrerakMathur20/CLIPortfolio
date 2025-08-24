@@ -33,7 +33,8 @@ export const Terminal: React.FC<TerminalProps> = ({ onPathChange }) => {
     setInput(value);
     
     if (value.trim()) {
-      const newSuggestions = getSuggestions(value);
+      // Remove 'hello' and 'whoami' from suggestions always
+      const newSuggestions = getSuggestions(value).filter(s => s !== 'hello' && s !== 'iamshreya');
       setSuggestions(newSuggestions);
     } else {
       setSuggestions([]);
