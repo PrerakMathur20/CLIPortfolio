@@ -6,6 +6,7 @@ import { MatrixTransition } from '../components/MatrixTransition';
 
 export default function Portfolio() {
   const [mode, setMode] = useState<'cli' | 'gui'>('cli');
+  const [displayMode, setDisplayMode] = useState<'cli' | 'gui'>('cli');
   const [showTransition, setShowTransition] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
 
@@ -15,9 +16,14 @@ export default function Portfolio() {
     setShowTransition(true);
   };
 
+  const handleTransitionMidpoint = () => {
+    // Switch the actual mode during the matrix phase
+    setMode(mode === 'cli' ? 'gui' : 'cli');
+  };
+
   const handleTransitionComplete = () => {
     setShowTransition(false);
-    setMode(mode === 'cli' ? 'gui' : 'cli');
+    setDisplayMode(mode);
   };
 
   const handlePathChange = (path: string) => {
@@ -57,27 +63,31 @@ export default function Portfolio() {
       </div>
 
       {/* Matrix Transition */}
-      <MatrixTransition isVisible={showTransition} onComplete={handleTransitionComplete} />
+      <MatrixTransition 
+        isVisible={showTransition} 
+        onComplete={handleTransitionComplete}
+        onMidpoint={handleTransitionMidpoint}
+      />
 
       {/* Main Content */}
       <AnimatePresence mode="wait">
-        {mode === 'cli' ? (
+        {displayMode === 'cli' ? (
           <motion.div
             key="cli"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: showTransition ? 1 : 0 }}
+            animate={{ opacity: showTransition ? 0 : 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: showTransition ? 0.8 : 0.6, ease: 'easeInOut' }}
           >
             <CLIMode currentPath={currentPath} onPathChange={handlePathChange} />
           </motion.div>
         ) : (
           <motion.div
             key="gui"
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
+            initial={{ opacity: showTransition ? 1 : 0 }}
+            animate={{ opacity: showTransition ? 0 : 1 }}
             exit={{ opacity: 0 }}
-            transition={{ duration: 0.3 }}
+            transition={{ duration: showTransition ? 0.8 : 0.6, ease: 'easeInOut' }}
           >
             <PortfolioGUI />
           </motion.div>
