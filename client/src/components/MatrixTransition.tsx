@@ -14,34 +14,34 @@ export const MatrixTransition: React.FC<MatrixTransitionProps> = ({ isVisible, o
   useEffect(() => {
     if (isVisible) {
       // Generate falling matrix characters
-      const newChars = Array.from({ length: 150 }, (_, i) => ({
+      const newChars = Array.from({ length: 120 }, (_, i) => ({
         id: i,
         char: Math.random() > 0.5 ? '1' : '0',
         left: `${Math.random() * 100}%`,
-        delay: Math.random() * 0.5,
-        speed: Math.random() * 2 + 1.5
+        delay: Math.random() * 0.3,
+        speed: Math.random() * 1.5 + 1.5
       }));
       setChars(newChars);
 
-      // Phase 1: Fade out current UI (800ms)
+      // Phase 1: Current UI fades out (600ms)
       setPhase('fadeOut');
       
       const phase1Timer = setTimeout(() => {
         // Phase 2: Full matrix rain (1000ms)
         setPhase('matrix');
         onMidpoint(); // Switch the mode during the matrix phase
-      }, 800);
+      }, 600);
 
       const phase2Timer = setTimeout(() => {
-        // Phase 3: Fade in new UI while matrix disappears (1200ms)
+        // Phase 3: Matrix fades while new UI appears (800ms)
         setPhase('fadeIn');
-      }, 1800);
+      }, 1600);
 
       const completeTimer = setTimeout(() => {
         onComplete();
         setChars([]);
         setPhase('fadeOut');
-      }, 3000);
+      }, 2400);
 
       return () => {
         clearTimeout(phase1Timer);

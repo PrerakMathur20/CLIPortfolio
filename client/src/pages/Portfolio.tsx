@@ -6,7 +6,6 @@ import { MatrixTransition } from '../components/MatrixTransition';
 
 export default function Portfolio() {
   const [mode, setMode] = useState<'cli' | 'gui'>('cli');
-  const [displayMode, setDisplayMode] = useState<'cli' | 'gui'>('cli');
   const [showTransition, setShowTransition] = useState(false);
   const [currentPath, setCurrentPath] = useState('');
 
@@ -23,7 +22,6 @@ export default function Portfolio() {
 
   const handleTransitionComplete = () => {
     setShowTransition(false);
-    setDisplayMode(mode);
   };
 
   const handlePathChange = (path: string) => {
@@ -70,29 +68,31 @@ export default function Portfolio() {
       />
 
       {/* Main Content */}
-      <AnimatePresence mode="wait">
-        {displayMode === 'cli' ? (
-          <motion.div
-            key="cli"
-            initial={{ opacity: showTransition ? 1 : 0 }}
-            animate={{ opacity: showTransition ? 0 : 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: showTransition ? 0.8 : 0.6, ease: 'easeInOut' }}
-          >
-            <CLIMode currentPath={currentPath} onPathChange={handlePathChange} />
-          </motion.div>
-        ) : (
-          <motion.div
-            key="gui"
-            initial={{ opacity: showTransition ? 1 : 0 }}
-            animate={{ opacity: showTransition ? 0 : 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: showTransition ? 0.8 : 0.6, ease: 'easeInOut' }}
-          >
-            <PortfolioGUI />
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <div className={`transition-opacity duration-700 ${showTransition ? 'opacity-0' : 'opacity-100'}`}>
+        <AnimatePresence mode="wait">
+          {mode === 'cli' ? (
+            <motion.div
+              key="cli"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <CLIMode currentPath={currentPath} onPathChange={handlePathChange} />
+            </motion.div>
+          ) : (
+            <motion.div
+              key="gui"
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5 }}
+            >
+              <PortfolioGUI />
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </div>
     </div>
   );
 }
