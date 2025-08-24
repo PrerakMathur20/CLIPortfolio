@@ -1,12 +1,15 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { portfolioData, achievements, positions } from '../data/portfolioData';
+import { EmailService } from '../services/emailService';
 
 export const PortfolioGUI: React.FC = () => {
   const [contactForm, setContactForm] = useState({
     email: '',
     message: '',
-    isSubmitted: false
+    isSubmitted: false,
+    isLoading: false,
+    error: ''
   });
 
   const fadeInUp = {
@@ -23,13 +26,33 @@ export const PortfolioGUI: React.FC = () => {
     }
   };
 
-  const handleFormSubmit = (e: React.FormEvent) => {
+  const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     if (contactForm.email && contactForm.message) {
-      setContactForm(prev => ({ ...prev, isSubmitted: true }));
-      setTimeout(() => {
-        setContactForm({ email: '', message: '', isSubmitted: false });
-      }, 3000);
+      setContactForm(prev => ({ ...prev, isLoading: true, error: '' }));
+      
+      try {
+        const result = await EmailService.sendEmail({
+          from_email: contactForm.email,
+          message: contactForm.message,
+          subject: 'New Contact Form Message from Portfolio'
+        });
+
+        if (result.success) {
+          setContactForm(prev => ({ ...prev, isSubmitted: true, isLoading: false }));
+          setTimeout(() => {
+            setContactForm({ email: '', message: '', isSubmitted: false, isLoading: false, error: '' });
+          }, 3000);
+        } else {
+          setContactForm(prev => ({ ...prev, isLoading: false, error: result.message }));
+        }
+      } catch (error) {
+        setContactForm(prev => ({ 
+          ...prev, 
+          isLoading: false, 
+          error: 'Failed to send message. Please try again or contact directly via email.' 
+        }));
+      }
     }
   };
 
@@ -375,14 +398,28 @@ export const PortfolioGUI: React.FC = () => {
                     />
                   </div>
                   
+                  {contactForm.error && (
+                    <div className="text-red-400 text-sm bg-red-900/20 p-3 rounded-lg border border-red-500/30">
+                      {contactForm.error}
+                    </div>
+                  )}
+                  
                   <motion.button
                     type="submit"
-                    className="w-full bg-matrix-green text-black font-semibold py-3 px-6 rounded-lg hover:bg-blue-400 transition-colors duration-300"
-                    whileHover={{ scale: 1.02 }}
-                    whileTap={{ scale: 0.98 }}
+                    disabled={contactForm.isLoading}
+                    className="w-full bg-matrix-green text-black font-semibold py-3 px-6 rounded-lg hover:bg-blue-400 transition-colors duration-300 disabled:opacity-50 disabled:cursor-not-allowed"
+                    whileHover={contactForm.isLoading ? {} : { scale: 1.02 }}
+                    whileTap={contactForm.isLoading ? {} : { scale: 0.98 }}
                     data-testid="contact-form-submit"
                   >
-                    Send Message
+                    {contactForm.isLoading ? (
+                      <div className="flex items-center justify-center">
+                        <i className="fas fa-spinner fa-spin mr-2"></i>
+                        Sending...
+                      </div>
+                    ) : (
+                      'Send Message'
+                    )}
                   </motion.button>
                 </form>
               )}

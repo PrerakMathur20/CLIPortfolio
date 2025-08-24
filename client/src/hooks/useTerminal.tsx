@@ -1,5 +1,6 @@
 import { useState, useCallback } from 'react';
 import { portfolioData, achievements, positions, openSourceContributions } from '../data/portfolioData';
+import { EmailService } from '../services/emailService';
 
 export interface TerminalState {
   currentPath: string;
@@ -218,14 +219,33 @@ export const useTerminal = () => {
 
     if (contactForm.mode === 'collecting-message') {
       if (trimmedInput.length > 10) {
+        addToOutput('📤 Sending email...');
+        
+        // Send email using EmailJS
+        EmailService.sendEmail({
+          from_email: contactForm.email,
+          message: trimmedInput,
+          subject: 'New CLI Contact Message from Portfolio'
+        }).then((result) => {
+          if (result.success) {
+            addToOutput('✅ Message sent successfully!');
+            addToOutput('');
+            addToOutput('📧 Email delivered to Prerak\'s inbox!');
+            addToOutput(`From: ${contactForm.email}`);
+            addToOutput(`Message: ${trimmedInput}`);
+            addToOutput('');
+            addToOutput('Thank you for reaching out! I\'ll get back to you soon.');
+          } else {
+            addToOutput('❌ Failed to send email:', false, true);
+            addToOutput(result.message, false, true);
+            addToOutput('Please try again or contact directly via email.', false, true);
+          }
+        }).catch(() => {
+          addToOutput('❌ Network error occurred while sending email.', false, true);
+          addToOutput('Please check your connection and try again.', false, true);
+        });
+        
         setContactForm(prev => ({ ...prev, message: trimmedInput, mode: 'idle' }));
-        addToOutput('✅ Message saved!');
-        addToOutput('');
-        addToOutput('📧 Contact form submitted successfully!');
-        addToOutput(`Email: ${contactForm.email}`);
-        addToOutput(`Message: ${trimmedInput}`);
-        addToOutput('');
-        addToOutput('Thank you for reaching out! I\'ll get back to you soon.');
         return { output: state.output, path: state.currentPath };
       } else {
         addToOutput('❌ Please enter a longer message (at least 10 characters):', false, true);
