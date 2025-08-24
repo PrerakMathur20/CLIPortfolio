@@ -22,11 +22,15 @@ export const useTerminal = () => {
   });
 
   const [contactForm, setContactForm] = useState<{
+    name: string;
     email: string;
+    subject: string;
     message: string;
-    mode: 'idle' | 'collecting-email' | 'collecting-message';
+    mode: 'idle' | 'collecting-name' | 'collecting-email' | 'collecting-subject' | 'collecting-message';
   }>({
+    name: '',
     email: '',
+    subject: '',
     message: '',
     mode: 'idle'
   });
@@ -130,8 +134,8 @@ export const useTerminal = () => {
       if (state.currentPath !== '/contact') {
         return ['Error: send-message command is only available in /contact directory', 'Use "cd contact" first'];
       }
-      setContactForm(prev => ({ ...prev, mode: 'collecting-email' }));
-      return ['✉️  Contact Form Started', 'Please enter your email address:'];
+      setContactForm(prev => ({ ...prev, mode: 'collecting-name' }));
+      return ['✉️  Contact Form Started', 'Please enter your full name:'];
     },
 
     'schedule-call': () => {
@@ -205,14 +209,38 @@ export const useTerminal = () => {
     addToOutput(`prerak@portfolio:~${state.currentPath}$ ${trimmedInput}`, true);
 
     // Handle contact form flow
+    if (contactForm.mode === 'collecting-name') {
+      if (trimmedInput.length > 1) {
+        setContactForm(prev => ({ ...prev, name: trimmedInput, mode: 'collecting-email' }));
+        addToOutput('✅ Name saved!');
+        addToOutput('Now please enter your email address:');
+        return { output: state.output, path: state.currentPath };
+      } else {
+        addToOutput('❌ Please enter a valid name:', false, true);
+        return { output: state.output, path: state.currentPath };
+      }
+    }
+
     if (contactForm.mode === 'collecting-email') {
       if (trimmedInput.includes('@') && trimmedInput.includes('.')) {
-        setContactForm(prev => ({ ...prev, email: trimmedInput, mode: 'collecting-message' }));
+        setContactForm(prev => ({ ...prev, email: trimmedInput, mode: 'collecting-subject' }));
         addToOutput('✅ Email saved!');
-        addToOutput('Now please enter your message:');
+        addToOutput('Now please enter the subject:');
         return { output: state.output, path: state.currentPath };
       } else {
         addToOutput('❌ Please enter a valid email address:', false, true);
+        return { output: state.output, path: state.currentPath };
+      }
+    }
+
+    if (contactForm.mode === 'collecting-subject') {
+      if (trimmedInput.length > 2) {
+        setContactForm(prev => ({ ...prev, subject: trimmedInput, mode: 'collecting-message' }));
+        addToOutput('✅ Subject saved!');
+        addToOutput('Finally, please enter your message:');
+        return { output: state.output, path: state.currentPath };
+      } else {
+        addToOutput('❌ Please enter a valid subject:', false, true);
         return { output: state.output, path: state.currentPath };
       }
     }
@@ -223,15 +251,17 @@ export const useTerminal = () => {
         
         // Send email using EmailJS
         EmailService.sendEmail({
+          from_name: contactForm.name,
           from_email: contactForm.email,
-          message: trimmedInput,
-          subject: 'New CLI Contact Message from Portfolio'
+          subject: contactForm.subject,
+          message: trimmedInput
         }).then((result) => {
           if (result.success) {
             addToOutput('✅ Message sent successfully!');
             addToOutput('');
             addToOutput('📧 Email delivered to Prerak\'s inbox!');
-            addToOutput(`From: ${contactForm.email}`);
+            addToOutput(`From: ${contactForm.name} (${contactForm.email})`);
+            addToOutput(`Subject: ${contactForm.subject}`);
             addToOutput(`Message: ${trimmedInput}`);
             addToOutput('');
             addToOutput('Thank you for reaching out! I\'ll get back to you soon.');

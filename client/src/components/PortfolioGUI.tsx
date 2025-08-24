@@ -5,6 +5,8 @@ import { EmailService } from '../services/emailService';
 
 export const PortfolioGUI: React.FC = () => {
   const [contactForm, setContactForm] = useState({
+    name: '',
+    subject: '',
     email: '',
     message: '',
     isSubmitted: false,
@@ -28,20 +30,21 @@ export const PortfolioGUI: React.FC = () => {
 
   const handleFormSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (contactForm.email && contactForm.message) {
+    if (contactForm.name && contactForm.email && contactForm.subject && contactForm.message) {
       setContactForm(prev => ({ ...prev, isLoading: true, error: '' }));
       
       try {
         const result = await EmailService.sendEmail({
+          from_name: contactForm.name,
           from_email: contactForm.email,
-          message: contactForm.message,
-          subject: 'New Contact Form Message from Portfolio'
+          subject: contactForm.subject,
+          message: contactForm.message
         });
 
         if (result.success) {
           setContactForm(prev => ({ ...prev, isSubmitted: true, isLoading: false }));
           setTimeout(() => {
-            setContactForm({ email: '', message: '', isSubmitted: false, isLoading: false, error: '' });
+            setContactForm({ name: '', subject: '', email: '', message: '', isSubmitted: false, isLoading: false, error: '' });
           }, 3000);
         } else {
           setContactForm(prev => ({ ...prev, isLoading: false, error: result.message }));
@@ -369,6 +372,21 @@ export const PortfolioGUI: React.FC = () => {
                 <form onSubmit={handleFormSubmit} className="space-y-6">
                   <div>
                     <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Full Name
+                    </label>
+                    <input
+                      type="text"
+                      value={contactForm.name}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, name: e.target.value }))}
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:border-matrix-green focus:outline-none focus:ring-1 focus:ring-matrix-green transition-colors text-white"
+                      placeholder="Your full name"
+                      required
+                      data-testid="contact-form-name"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
                       Email Address
                     </label>
                     <input
@@ -379,6 +397,21 @@ export const PortfolioGUI: React.FC = () => {
                       placeholder="your.email@example.com"
                       required
                       data-testid="contact-form-email"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Subject
+                    </label>
+                    <input
+                      type="text"
+                      value={contactForm.subject}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, subject: e.target.value }))}
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:border-matrix-green focus:outline-none focus:ring-1 focus:ring-matrix-green transition-colors text-white"
+                      placeholder="What is this about?"
+                      required
+                      data-testid="contact-form-subject"
                     />
                   </div>
                   

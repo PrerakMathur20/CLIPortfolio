@@ -180,9 +180,21 @@ export const CLIMode: React.FC<CLIModeProps> = ({ currentPath, onPathChange }) =
               <h3 className="text-xl font-semibold text-white mb-4">Send a Message</h3>
               <div className="space-y-4 text-sm">
                 <div>
+                  <label className="text-gray-400 block mb-1">Name:</label>
+                  <div className="bg-gray-800 p-2 rounded border border-gray-600 text-matrix-green font-mono">
+                    [Enter your name] - Use: send-message command
+                  </div>
+                </div>
+                <div>
                   <label className="text-gray-400 block mb-1">Email:</label>
                   <div className="bg-gray-800 p-2 rounded border border-gray-600 text-matrix-green font-mono">
                     [Enter your email] - Use: send-message command
+                  </div>
+                </div>
+                <div>
+                  <label className="text-gray-400 block mb-1">Subject:</label>
+                  <div className="bg-gray-800 p-2 rounded border border-gray-600 text-matrix-green font-mono">
+                    [Enter subject] - Use: send-message command
                   </div>
                 </div>
                 <div>
