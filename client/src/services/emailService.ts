@@ -1,9 +1,9 @@
-import emailjs from '@emailjs/browser';
+import emailjs from "@emailjs/browser";
 
 // EmailJS Configuration
-const EMAILJS_SERVICE_ID = 'service_k6gqrqr';
-const EMAILJS_TEMPLATE_ID = 'template_udfjk5n';
-const EMAILJS_PUBLIC_KEY = 'alJN90IOY3ndBa-Jl';
+const EMAILJS_SERVICE_ID = "service_k6gqrqr";
+const EMAILJS_TEMPLATE_ID = "template_uuw0thv";
+const EMAILJS_PUBLIC_KEY = "alJN90IOY3ndBa-Jl";
 
 export interface EmailData {
   from_email: string;
@@ -22,38 +22,40 @@ export class EmailService {
     }
   }
 
-  static async sendEmail(data: EmailData): Promise<{ success: boolean; message: string }> {
+  static async sendEmail(
+    data: EmailData,
+  ): Promise<{ success: boolean; message: string }> {
     try {
       this.initialize();
 
       const templateParams = {
         from_email: data.from_email,
-        from_name: data.from_name || 'Portfolio Contact',
+        from_name: data.from_name || "Portfolio Contact",
         message: data.message,
-        subject: data.subject || 'New message from Portfolio',
-        to_email: 'mathur.prerak@gmail.com', // Your email address
-        reply_to: data.from_email
+        subject: data.subject || "New message from Portfolio",
+        to_email: "mathur.prerak@gmail.com", // Your email address
+        reply_to: data.from_email,
       };
 
       const response = await emailjs.send(
         EMAILJS_SERVICE_ID,
         EMAILJS_TEMPLATE_ID,
-        templateParams
+        templateParams,
       );
 
       if (response.status === 200) {
         return {
           success: true,
-          message: 'Email sent successfully!'
+          message: "Email sent successfully!",
         };
       } else {
-        throw new Error('Failed to send email');
+        throw new Error("Failed to send email");
       }
     } catch (error) {
-      console.error('Email sending failed:', error);
+      console.error("Email sending failed:", error);
       return {
         success: false,
-        message: 'Failed to send email. Please try again or contact directly.'
+        message: "Failed to send email. Please try again or contact directly.",
       };
     }
   }
