@@ -20,6 +20,16 @@ export const useTerminal = () => {
     ]
   });
 
+  const [contactForm, setContactForm] = useState<{
+    email: string;
+    message: string;
+    mode: 'idle' | 'collecting-email' | 'collecting-message';
+  }>({
+    email: '',
+    message: '',
+    mode: 'idle'
+  });
+
   const addToOutput = useCallback((text: string, isCommand = false, isError = false) => {
     setState(prev => ({
       ...prev,
@@ -72,7 +82,11 @@ export const useTerminal = () => {
         '  skills           - Technical skills and certifications',
         '  contact          - Contact information',
         '  achievements     - Awards and recognition',
-        '  contributions    - Open source contributions'
+        '  contributions    - Open source contributions',
+        '',
+        'Contact commands (when in /contact):',
+        '  send-message     - Start composing an email',
+        '  schedule-call    - Schedule a call'
       ];
     },
 
@@ -108,6 +122,26 @@ export const useTerminal = () => {
         'Phone: +91 967 261 4863',
         'Website: prerak.tech',
         'GitHub: PrerakMathur20'
+      ];
+    },
+
+    'send-message': () => {
+      if (state.currentPath !== '/contact') {
+        return ['Error: send-message command is only available in /contact directory', 'Use "cd contact" first'];
+      }
+      setContactForm(prev => ({ ...prev, mode: 'collecting-email' }));
+      return ['✉️  Contact Form Started', 'Please enter your email address:'];
+    },
+
+    'schedule-call': () => {
+      if (state.currentPath !== '/contact') {
+        return ['Error: schedule-call command is only available in /contact directory', 'Use "cd contact" first'];
+      }
+      return [
+        '📞  Schedule a Call',
+        'To schedule a call, please email me at: mathur.prerak@gmail.com',
+        'Or connect with me on LinkedIn for quick scheduling',
+        'Available slots: Weekdays 10 AM - 6 PM IST'
       ];
     }
   };
@@ -169,6 +203,36 @@ export const useTerminal = () => {
     addToHistory(trimmedInput);
     addToOutput(`prerak@portfolio:~${state.currentPath}$ ${trimmedInput}`, true);
 
+    // Handle contact form flow
+    if (contactForm.mode === 'collecting-email') {
+      if (trimmedInput.includes('@') && trimmedInput.includes('.')) {
+        setContactForm(prev => ({ ...prev, email: trimmedInput, mode: 'collecting-message' }));
+        addToOutput('✅ Email saved!');
+        addToOutput('Now please enter your message:');
+        return { output: state.output, path: state.currentPath };
+      } else {
+        addToOutput('❌ Please enter a valid email address:', false, true);
+        return { output: state.output, path: state.currentPath };
+      }
+    }
+
+    if (contactForm.mode === 'collecting-message') {
+      if (trimmedInput.length > 10) {
+        setContactForm(prev => ({ ...prev, message: trimmedInput, mode: 'idle' }));
+        addToOutput('✅ Message saved!');
+        addToOutput('');
+        addToOutput('📧 Contact form submitted successfully!');
+        addToOutput(`Email: ${contactForm.email}`);
+        addToOutput(`Message: ${trimmedInput}`);
+        addToOutput('');
+        addToOutput('Thank you for reaching out! I\'ll get back to you soon.');
+        return { output: state.output, path: state.currentPath };
+      } else {
+        addToOutput('❌ Please enter a longer message (at least 10 characters):', false, true);
+        return { output: state.output, path: state.currentPath };
+      }
+    }
+
     const parts = trimmedInput.split(' ');
     const command = parts[0].toLowerCase();
     const args = parts.slice(1);
@@ -191,7 +255,7 @@ export const useTerminal = () => {
     });
 
     return { output: state.output, path: state.currentPath };
-  }, [state, addToHistory, addToOutput, handleCdCommand]);
+  }, [state, contactForm, addToHistory, addToOutput, handleCdCommand]);
 
   const getSuggestions = useCallback((input: string) => {
     const parts = input.trim().split(' ');
@@ -199,7 +263,11 @@ export const useTerminal = () => {
     
     if (parts.length === 1) {
       const commandNames = Object.keys(commands);
-      return commandNames.filter(cmd => cmd.startsWith(input.toLowerCase()));
+      // Add contact-specific commands when in contact directory
+      const allCommands = state.currentPath === '/contact' 
+        ? [...commandNames, 'send-message', 'schedule-call']
+        : commandNames;
+      return allCommands.filter(cmd => cmd.startsWith(input.toLowerCase()));
     } else if (command === 'cd' && parts.length === 2) {
       const currentDir = state.currentPath;
       let dirs: string[] = [];

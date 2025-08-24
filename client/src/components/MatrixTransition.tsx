@@ -11,18 +11,18 @@ export const MatrixTransition: React.FC<MatrixTransitionProps> = ({ isVisible, o
 
   useEffect(() => {
     if (isVisible) {
-      const newChars = Array.from({ length: 100 }, (_, i) => ({
+      const newChars = Array.from({ length: 300 }, (_, i) => ({
         id: i,
         char: Math.random() > 0.5 ? '1' : '0',
         left: `${Math.random() * 100}%`,
-        delay: i * 0.02
+        delay: i * 0.01
       }));
       setChars(newChars);
 
       const timer = setTimeout(() => {
         onComplete();
         setChars([]);
-      }, 2000);
+      }, 3000);
 
       return () => clearTimeout(timer);
     }

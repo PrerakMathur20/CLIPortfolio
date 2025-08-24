@@ -1,8 +1,14 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { portfolioData, achievements, positions } from '../data/portfolioData';
 
 export const PortfolioGUI: React.FC = () => {
+  const [contactForm, setContactForm] = useState({
+    email: '',
+    message: '',
+    isSubmitted: false
+  });
+
   const fadeInUp = {
     initial: { opacity: 0, y: 60 },
     animate: { opacity: 1, y: 0 },
@@ -14,6 +20,16 @@ export const PortfolioGUI: React.FC = () => {
       transition: {
         staggerChildren: 0.1
       }
+    }
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (contactForm.email && contactForm.message) {
+      setContactForm(prev => ({ ...prev, isSubmitted: true }));
+      setTimeout(() => {
+        setContactForm({ email: '', message: '', isSubmitted: false });
+      }, 3000);
     }
   };
 
@@ -284,9 +300,9 @@ export const PortfolioGUI: React.FC = () => {
 
       {/* Contact Section */}
       <section className="py-20 px-6">
-        <div className="max-w-4xl mx-auto text-center">
+        <div className="max-w-4xl mx-auto">
           <motion.h2 
-            className="text-4xl font-light mb-8 bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent"
+            className="text-4xl font-light mb-8 text-center bg-gradient-to-r from-white to-gray-300 bg-clip-text text-transparent"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6 }}
@@ -295,7 +311,7 @@ export const PortfolioGUI: React.FC = () => {
             Let's Connect
           </motion.h2>
           <motion.p 
-            className="text-xl text-gray-400 mb-12"
+            className="text-xl text-gray-400 mb-12 text-center"
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.2 }}
@@ -304,53 +320,144 @@ export const PortfolioGUI: React.FC = () => {
             Interested in collaborating or learning more about my work?
           </motion.p>
           
-          <motion.div 
-            className="grid md:grid-cols-3 gap-8"
-            initial="initial"
-            whileInView="animate"
-            variants={staggerChildren}
-            viewport={{ once: true }}
-          >
-            <motion.a 
-              href={`mailto:${portfolioData.contact.info.email}`}
-              className="glass-card rounded-2xl p-8 hover:scale-105 transition-all duration-300 group block"
-              variants={fadeInUp}
-              whileHover={{ y: -5 }}
-              data-testid="contact-email"
+          <div className="grid md:grid-cols-2 gap-12">
+            {/* Contact Form */}
+            <motion.div
+              className="glass-card rounded-2xl p-8"
+              initial={{ opacity: 0, x: -50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
             >
-              <i className="fas fa-envelope text-matrix-green text-3xl mb-4 group-hover:text-blue-400 transition-colors"></i>
-              <h3 className="text-xl font-semibold mb-2">Email</h3>
-              <p className="text-gray-400">{portfolioData.contact.info.email}</p>
-            </motion.a>
-            
-            <motion.a 
-              href={`https://${portfolioData.contact.info.website}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glass-card rounded-2xl p-8 hover:scale-105 transition-all duration-300 group block"
-              variants={fadeInUp}
-              whileHover={{ y: -5 }}
-              data-testid="contact-website"
+              <h3 className="text-2xl font-semibold mb-6 text-matrix-green">Send a Message</h3>
+              
+              {contactForm.isSubmitted ? (
+                <motion.div 
+                  className="text-center py-8"
+                  initial={{ opacity: 0, scale: 0.8 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  transition={{ duration: 0.5 }}
+                >
+                  <i className="fas fa-check-circle text-matrix-green text-4xl mb-4"></i>
+                  <h4 className="text-xl font-semibold mb-2">Message Sent!</h4>
+                  <p className="text-gray-400">Thank you for reaching out. I'll get back to you soon!</p>
+                </motion.div>
+              ) : (
+                <form onSubmit={handleFormSubmit} className="space-y-6">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Email Address
+                    </label>
+                    <input
+                      type="email"
+                      value={contactForm.email}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, email: e.target.value }))}
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:border-matrix-green focus:outline-none focus:ring-1 focus:ring-matrix-green transition-colors text-white"
+                      placeholder="your.email@example.com"
+                      required
+                      data-testid="contact-form-email"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-300 mb-2">
+                      Message
+                    </label>
+                    <textarea
+                      value={contactForm.message}
+                      onChange={(e) => setContactForm(prev => ({ ...prev, message: e.target.value }))}
+                      rows={5}
+                      className="w-full px-4 py-3 bg-gray-800 border border-gray-600 rounded-lg focus:border-matrix-green focus:outline-none focus:ring-1 focus:ring-matrix-green transition-colors text-white resize-none"
+                      placeholder="Tell me about your project or just say hello..."
+                      required
+                      minLength={10}
+                      data-testid="contact-form-message"
+                    />
+                  </div>
+                  
+                  <motion.button
+                    type="submit"
+                    className="w-full bg-matrix-green text-black font-semibold py-3 px-6 rounded-lg hover:bg-blue-400 transition-colors duration-300"
+                    whileHover={{ scale: 1.02 }}
+                    whileTap={{ scale: 0.98 }}
+                    data-testid="contact-form-submit"
+                  >
+                    Send Message
+                  </motion.button>
+                </form>
+              )}
+            </motion.div>
+
+            {/* Contact Links */}
+            <motion.div
+              className="space-y-6"
+              initial={{ opacity: 0, x: 50 }}
+              whileInView={{ opacity: 1, x: 0 }}
+              transition={{ duration: 0.6 }}
+              viewport={{ once: true }}
             >
-              <i className="fas fa-globe text-matrix-green text-3xl mb-4 group-hover:text-blue-400 transition-colors"></i>
-              <h3 className="text-xl font-semibold mb-2">Website</h3>
-              <p className="text-gray-400">{portfolioData.contact.info.website}</p>
-            </motion.a>
-            
-            <motion.a 
-              href={`https://github.com/${portfolioData.contact.info.github}`}
-              target="_blank"
-              rel="noopener noreferrer"
-              className="glass-card rounded-2xl p-8 hover:scale-105 transition-all duration-300 group block"
-              variants={fadeInUp}
-              whileHover={{ y: -5 }}
-              data-testid="contact-github"
-            >
-              <i className="fab fa-github text-matrix-green text-3xl mb-4 group-hover:text-blue-400 transition-colors"></i>
-              <h3 className="text-xl font-semibold mb-2">GitHub</h3>
-              <p className="text-gray-400">{portfolioData.contact.info.github}</p>
-            </motion.a>
-          </motion.div>
+              <h3 className="text-2xl font-semibold mb-6 text-matrix-green">Other Ways to Connect</h3>
+              
+              <motion.a 
+                href={`mailto:${portfolioData.contact.info.email}`}
+                className="glass-card rounded-xl p-6 hover:scale-105 transition-all duration-300 group block"
+                whileHover={{ y: -5 }}
+                data-testid="contact-email"
+              >
+                <div className="flex items-center">
+                  <i className="fas fa-envelope text-matrix-green text-2xl mr-4 group-hover:text-blue-400 transition-colors"></i>
+                  <div>
+                    <h4 className="font-semibold">Email</h4>
+                    <p className="text-gray-400 text-sm">{portfolioData.contact.info.email}</p>
+                  </div>
+                </div>
+              </motion.a>
+              
+              <motion.a 
+                href={`https://${portfolioData.contact.info.website}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glass-card rounded-xl p-6 hover:scale-105 transition-all duration-300 group block"
+                whileHover={{ y: -5 }}
+                data-testid="contact-website"
+              >
+                <div className="flex items-center">
+                  <i className="fas fa-globe text-matrix-green text-2xl mr-4 group-hover:text-blue-400 transition-colors"></i>
+                  <div>
+                    <h4 className="font-semibold">Website</h4>
+                    <p className="text-gray-400 text-sm">{portfolioData.contact.info.website}</p>
+                  </div>
+                </div>
+              </motion.a>
+              
+              <motion.a 
+                href={`https://github.com/${portfolioData.contact.info.github}`}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="glass-card rounded-xl p-6 hover:scale-105 transition-all duration-300 group block"
+                whileHover={{ y: -5 }}
+                data-testid="contact-github"
+              >
+                <div className="flex items-center">
+                  <i className="fab fa-github text-matrix-green text-2xl mr-4 group-hover:text-blue-400 transition-colors"></i>
+                  <div>
+                    <h4 className="font-semibold">GitHub</h4>
+                    <p className="text-gray-400 text-sm">{portfolioData.contact.info.github}</p>
+                  </div>
+                </div>
+              </motion.a>
+
+              <div className="glass-card rounded-xl p-6">
+                <div className="flex items-center">
+                  <i className="fas fa-phone text-matrix-green text-2xl mr-4"></i>
+                  <div>
+                    <h4 className="font-semibold">Phone</h4>
+                    <p className="text-gray-400 text-sm">{portfolioData.contact.info.phone}</p>
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          </div>
         </div>
       </section>
     </div>
